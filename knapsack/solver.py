@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+import numpy as np
 from collections import namedtuple
 Item = namedtuple("Item", ['index', 'value', 'weight'])
 
@@ -26,17 +26,42 @@ def solve_it(input_data):
     value = 0
     weight = 0
     taken = [0]*len(items)
-
+    # print("Capacity: " , capacity)
+    # for i in range(len(items)):
+    #     print(items[i],items[i].weight)
     for item in items:
-        if weight + item.weight <= capacity:
-            taken[item.index] = 1
-            value += item.value
-            weight += item.weight
+        print(item)
+    taken=dynamic_tabular(capacity,items)
+    for i in range(len(taken)):
+        value+=taken[i]*items[i].value
+    # for item in items:
+    #     if weight + item.weight <= capacity:
+    #         taken[item.index] = 1
+    #         value += item.value
+    #         weight += item.weight
     
     # prepare the solution in the specified output format
     output_data = str(value) + ' ' + str(0) + '\n'
     output_data += ' '.join(map(str, taken))
     return output_data
+
+def dynamic_tabular(k,items):
+    resoult=[0]*len(items)
+    table=np.zeros([k+1,len(items)+1])
+    for i in range(len(items)):
+
+        for j in range(k+1):
+            if(j>=items[i].weight):
+                table[j][i+1]=max(table[j][i],items[i].value+table[j-items[i].weight][i])
+            else:
+                table[j][i+1]=table[j][i]
+    j=k
+    for i in reversed(range(1,len(items)+1)):
+        if(table[j][i]!=table[j][i-1]):
+            resoult[i-1]=1
+            j-=items[i-1].weight
+        
+    return resoult
 
 
 if __name__ == '__main__':
